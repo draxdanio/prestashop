@@ -1039,28 +1039,17 @@ class ValidateCore
 	 */
 	public static function isSiret($siret)
 	{
-		if (Tools::strlen($siret) != 9) {
-			if (Tools::strlen($siret) != 14) {		
-				return false;
-			}
-		}
+		if (Tools::strlen($siret) != 14)
+			return false;
 		$sum = 0;
-		if (Tools::strlen($siret) == 9) {
-			$sum = $siret[0] * 8 + $siret[1] * 9 + $siret[2] * 2 + $siret[3] * 3 + $siret[4] * 4 + $siret[5] * 5 + $siret[6] * 6 + $siret[7] * 7;
-			if ($sum % 11 == $siret[8]) {
-				return true;
-			} else {
-				return false;
-			}
-		} else if (Tools::strlen($siret) == 14) {
-			$sum = $siret[0] * 2 + $siret[1] * 4 + $siret[2] * 8 + $siret[3] * 5 + $siret[4] * 0 + $siret[5] * 9 + $siret[6] * 7 + $siret[7] * 3 + $siret[8] * 6 + $siret[9] * 1 + $siret[10] * 2 + $siret[11] * 4 + $siret[12] * 8;
-			if ($sum % 11 == $siret[13]) {
-				return true;
-			} else {
-				return false;
-			}
-
+		for ($i = 0; $i != 14; $i++)
+		{
+			$tmp = ((($i + 1) % 2) + 1) * intval($siret[$i]);
+			if ($tmp >= 10)
+				$tmp -= 9;
+			$sum += $tmp;
 		}
+		return ($sum % 10 === 0);
 	}
 
 	/**
@@ -1071,30 +1060,7 @@ class ValidateCore
 	 */
 	public static function isApe($ape)
 	{
-		if (Tools::strlen($ape) != 10) {
-			if (Tools::strlen($ape) != 13) {		
-				return false;
-			}
-		}
-		$sum = 0;
-		if (Tools::strlen($ape) == 10) {
-			$sum = $ape[0] * 6 + $ape[1] * 5 + $ape[2] * 7 + $ape[3] * 2 + $ape[4] * 3 + $ape[5] * 4 + $ape[6] * 5 + $ape[7] * 6 + $ape[8] * 7;
-			if ($sum % 11 == $ape[9]) {
-				return true;
-			} else {
-				return false;
-			}
-		} else if (Tools::strlen($ape) == 13) {
-			$new_ape = explode('-', $ape);
-			$new_ape = $new_ape[0] + $new_ape[2] + $new_ape[4] + $new_ape[6];
-			$sum = $new_ape[0] * 6 + $new_ape[1] * 5 + $new_ape[2] * 7 + $new_ape[3] * 2 + $new_ape[4] * 3 + $new_ape[5] * 4 + $new_ape[6] * 5 + $new_ape[7] * 6 + $new_ape[8] * 7;
-			if ($sum % 11 == $new_ape[13]) {
-				return true;
-			} else {
-				return false;
-			}
-
-		}
+		return (bool)preg_match('/^[0-9]{3,4}[a-zA-Z]{1}$/s', $ape);
 	}
 	
 	public static function isControllerName($name)
